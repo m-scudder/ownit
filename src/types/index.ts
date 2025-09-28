@@ -34,4 +34,7 @@ export interface RootState {
   habits: Habit[];
   categories: Category[];
   completions: Completion[];
+  theme: ThemeMode;
 }
+
+export type ThemeMode = 'light' | 'dark';

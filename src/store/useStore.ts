@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { Category, Completion, Habit, HabitSchedule, RootState } from '../types';
+import type { Category, Completion, Habit, HabitSchedule, RootState, ThemeMode } from '../types';
 import { formatDateKey } from '../utils/dates';
 
 const generateId = (): string => `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
@@ -17,11 +17,15 @@ interface Actions {
 
   completeHabitToday: (habitId: string, note: string, date?: Date) => void;
   removeCompletion: (completionId: string) => void;
+
+  setTheme: (mode: ThemeMode) => void;
+  toggleTheme: () => void;
 }
 
 export const useStore = create<RootState & Actions>()(
   persist(
     (set, get) => ({
+      theme: 'dark',
       habits: [],
       categories: [],
       completions: [],
@@ -73,7 +77,10 @@ export const useStore = create<RootState & Actions>()(
       },
       removeCompletion: (completionId) => {
         set((s) => ({ completions: s.completions.filter((c) => c.id !== completionId) }));
-      }
+      },
+
+      setTheme: (mode) => set(() => ({ theme: mode })),
+      toggleTheme: () => set((s) => ({ theme: s.theme === 'dark' ? 'light' : 'dark' }))
     }),
     {
       name: 'ownit-store',
