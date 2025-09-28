@@ -16,8 +16,6 @@ function HomeStackNavigator() {
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-      <HomeStack.Screen name="HabitForm" component={HabitFormScreen} options={{ title: 'Habit' }} />
-      <HomeStack.Screen name="Categories" component={CategoriesScreen} options={{ title: 'Categories' }} />
       <HomeStack.Screen name="HabitDetail" component={HabitDetailScreen} options={{ title: 'Details' }} />
     </HomeStack.Navigator>
   );
@@ -27,6 +25,8 @@ function ProfileStackNavigator() {
   return (
     <ProfileStack.Navigator screenOptions={{ headerStyle: { backgroundColor: '#111' }, headerTintColor: '#fff', contentStyle: { backgroundColor: '#000' } }}>
       <ProfileStack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+      <ProfileStack.Screen name="HabitForm" component={HabitFormScreen} options={{ title: 'Habit' }} />
+      <ProfileStack.Screen name="Categories" component={CategoriesScreen} options={{ title: 'Categories' }} />
     </ProfileStack.Navigator>
   );
 }

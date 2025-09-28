@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { FlatList, View } from 'react-native';
-import { Screen, Title, Button, TextBody } from '../components/Neutral';
+import { Screen, Title, TextBody } from '../components/Neutral';
 import { useStore } from '../store/useStore';
 import { HabitItem } from '../components/HabitItem';
 import { formatDateKey, isHabitDueOnDate } from '@/utils/dates';
@@ -16,10 +16,6 @@ const HomeScreen: React.FC<any> = ({ navigation }) => {
     <Screen>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 }}>
         <Title>Today</Title>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          <Button label="Categories" onPress={() => navigation.navigate('Categories')} />
-          <Button label="Add Habit" onPress={() => navigation.navigate('HabitForm')} />
-        </View>
       </View>
 
       {items.length === 0 ? (

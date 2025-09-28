@@ -1,13 +1,16 @@
-import { Screen} from '@/components/Neutral';
+import { Screen, Button, Title, TextBody } from '@/components/Neutral';
 import React from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const ProfileScreen: React.FC = () => {
+const ProfileScreen: React.FC<any> = () => {
+  const navigation = useNavigation<any>();
   const [isDarkMode, setIsDarkMode] = React.useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
 
   return (
     <Screen>
+      <Title style={{ marginBottom: 16 }}>Profile</Title>
       <View style={styles.row}>
         <Text style={styles.label}>Dark Mode</Text>
         <Switch value={isDarkMode} onValueChange={setIsDarkMode} />
@@ -19,9 +22,11 @@ const ProfileScreen: React.FC = () => {
       </View>
 
       <Text style={styles.sectionTitle}>Manage</Text>
-      <Text style={styles.item}>Habits</Text>
-      <Text style={styles.item}>Categories</Text>
-      <Text style={styles.item}>Preferences</Text>
+      <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
+        <Button label="Add Habit" onPress={() => navigation.navigate('HabitForm')} />
+        <Button label="Categories" onPress={() => navigation.navigate('Categories')} />
+      </View>
+      <TextBody style={{ color: '#aaa' }}>Create new habits and manage categories here.</TextBody>
     </Screen>
   );
 };
