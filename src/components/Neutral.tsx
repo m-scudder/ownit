@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, TextInput as RNTextInput, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../theme/colors';
 
 export const Screen: React.FC<{ children: React.ReactNode; style?: ViewStyle }> = ({ children, style }) => (
-  <View style={[styles.screen, style]}>{children}</View>
+  <SafeAreaView style={[styles.screen, style]}>{children}</SafeAreaView>
 );
 
 export const Title: React.FC<{ children: React.ReactNode; style?: TextStyle }> = ({ children, style }) => (
