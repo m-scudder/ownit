@@ -7,6 +7,7 @@ import HabitFormScreen from './src/screens/HabitFormScreen';
 import CategoriesScreen from './src/screens/CategoriesScreen';
 import HabitDetailScreen from './src/screens/HabitDetailScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from './src/theme/useTheme';
 
 const HomeStack = createNativeStackNavigator();
@@ -57,12 +58,21 @@ export default function App() {
     <SafeAreaProvider>
       <NavigationContainer theme={navTheme}>
         <Tab.Navigator
-          screenOptions={{
+          screenOptions={({ route }) => ({
             headerShown: false,
             tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
             tabBarActiveTintColor: colors.text,
-            tabBarInactiveTintColor: colors.subtext
-          }}
+            tabBarInactiveTintColor: colors.subtext,
+            tabBarIcon: ({ color, size, focused }) => {
+              let iconName = 'ellipse';
+              if (route.name === 'HomeTab') {
+                iconName = focused ? 'home' : 'home-outline';
+              } else if (route.name === 'ProfileTab') {
+                iconName = focused ? 'person' : 'person-outline';
+              }
+              return <Ionicons name={iconName} size={size} color={color} />;
+            }
+          })}
         >
           <Tab.Screen name="HomeTab" component={HomeStackNavigator} options={{ title: 'Home' }} />
           <Tab.Screen name="ProfileTab" component={ProfileStackNavigator} options={{ title: 'Profile' }} />
