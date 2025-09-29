@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FlatList, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Screen, Title, TextBody, Button } from '../components/Neutral';
 import { useStore } from '../store/useStore';
 import { useTheme } from '../theme/useTheme';
 import { useNavigation } from '@react-navigation/native';
-import type { Habit, Completion } from '../types';
+import type { Habit, Completion, Category } from '../types';
 
 const AllHabitsScreen: React.FC<any> = () => {
   const navigation = useNavigation<any>();
@@ -16,6 +16,37 @@ const AllHabitsScreen: React.FC<any> = () => {
     const category = categories.find(c => c.id === categoryId);
     return category?.name || 'Unknown Category';
   };
+
+  // Group habits by category and sort alphabetically
+  const categorizedHabits = useMemo(() => {
+    const grouped: { [key: string]: Habit[] } = {};
+    
+    // Group habits by category
+    habits.forEach(habit => {
+      const categoryName = getCategoryName(habit.categoryId);
+      if (!grouped[categoryName]) {
+        grouped[categoryName] = [];
+      }
+      grouped[categoryName].push(habit);
+    });
+    
+    // Sort categories alphabetically and sort habits within each category
+    const sortedCategories = Object.keys(grouped).sort();
+    const result: Array<{ type: 'header' | 'habit'; categoryName?: string; habit?: Habit }> = [];
+    
+    sortedCategories.forEach(categoryName => {
+      // Add category header
+      result.push({ type: 'header', categoryName });
+      
+      // Add habits sorted alphabetically
+      const sortedHabits = grouped[categoryName].sort((a, b) => a.name.localeCompare(b.name));
+      sortedHabits.forEach(habit => {
+        result.push({ type: 'habit', habit });
+      });
+    });
+    
+    return result;
+  }, [habits, categories]);
 
   const getScheduleText = (habit: Habit) => {
     const { schedule } = habit;
@@ -33,7 +64,18 @@ const AllHabitsScreen: React.FC<any> = () => {
     }
   };
 
-  const renderHabitItem = ({ item: habit }: { item: Habit }) => {
+  const renderItem = ({ item }: { item: { type: 'header' | 'habit'; categoryName?: string; habit?: Habit } }) => {
+    if (item.type === 'header') {
+      return (
+        <View style={styles.categoryHeader}>
+          <Title style={{ ...styles.categoryTitle, color: colors.text }}>
+            {item.categoryName}
+          </Title>
+        </View>
+      );
+    }
+
+    const habit = item.habit!;
     const categoryName = getCategoryName(habit.categoryId);
     const scheduleText = getScheduleText(habit);
 
@@ -76,11 +118,13 @@ const AllHabitsScreen: React.FC<any> = () => {
         </View>
       ) : (
         <FlatList
-          data={habits}
-          keyExtractor={(habit) => habit.id}
+          data={categorizedHabits}
+          keyExtractor={(item, index) => 
+            item.type === 'header' ? `header-${item.categoryName}` : `habit-${item.habit!.id}`
+          }
           contentContainerStyle={styles.listContainer}
           ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-          renderItem={renderHabitItem}
+          renderItem={renderItem}
           showsVerticalScrollIndicator={false}
         />
       )}
@@ -91,6 +135,15 @@ const AllHabitsScreen: React.FC<any> = () => {
 const styles = StyleSheet.create({
   ctaContainer: {
     marginBottom: 12,
+  },
+  categoryHeader: {
+    marginTop: 16,
+    marginBottom: 8,
+    paddingHorizontal: 4,
+  },
+  categoryTitle: {
+    fontSize: 18,
+    fontWeight: '700',
   },
   habitItem: {
     borderRadius: 8,
