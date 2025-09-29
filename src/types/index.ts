@@ -20,6 +20,7 @@ export interface Habit {
   categoryId?: string | null;
   schedule: HabitSchedule;
   reminder?: HabitReminder;
+  requiresNote?: boolean; // If true, habit cannot be completed without a note
   createdAt: string; // ISO
 }
 

@@ -94,11 +94,12 @@ interface Actions {
     categoryId?: string | null;
     schedule: HabitSchedule;
     reminder?: HabitReminder;
+    requiresNote?: boolean;
   }) => string;
   updateHabit: (
     id: string,
     updates: Partial<
-      Pick<Habit, "name" | "categoryId" | "schedule" | "reminder">
+      Pick<Habit, "name" | "categoryId" | "schedule" | "reminder" | "requiresNote">
     >,
   ) => void;
   deleteHabit: (id: string) => void;
@@ -165,7 +166,7 @@ export const useStore = create<RootState & Actions>()(
         }
       },
 
-      addHabit: ({ name, categoryId = null, schedule, reminder }) => {
+      addHabit: ({ name, categoryId = null, schedule, reminder, requiresNote = false }) => {
         const id = generateId();
         const next: Habit = {
           id,
@@ -173,6 +174,7 @@ export const useStore = create<RootState & Actions>()(
           categoryId,
           schedule,
           reminder,
+          requiresNote,
           createdAt: new Date().toISOString(),
         };
         set((s) => ({ habits: [next, ...s.habits] }));
@@ -220,6 +222,15 @@ export const useStore = create<RootState & Actions>()(
       },
 
       completeHabitToday: (habitId, note, date = new Date()) => {
+        const habit = get().habits.find(h => h.id === habitId);
+        if (!habit) return;
+        
+        // Check if habit requires a note and no note is provided
+        if (habit.requiresNote && !note.trim()) {
+          console.warn(`Cannot complete habit "${habit.name}" without a note`);
+          return;
+        }
+        
         const key = formatDateKey(date);
         const exists = get().completions.find(
           (c) => c.habitId === habitId && c.date === key,

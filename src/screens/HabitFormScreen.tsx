@@ -67,6 +67,11 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
     return date;
   });
   const [showTimePicker, setShowTimePicker] = useState(false);
+  
+  // Note requirement state
+  const [requiresNote, setRequiresNote] = useState(
+    editing?.requiresNote ?? false,
+  );
 
   const schedule: HabitSchedule = useMemo(() => {
     if (frequency === "monthly") {
@@ -113,6 +118,7 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
         categoryId,
         schedule,
         reminder: finalReminder,
+        requiresNote,
       });
       navigation.goBack();
     } else {
@@ -121,6 +127,7 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
         categoryId,
         schedule,
         reminder: finalReminder,
+        requiresNote,
       });
       navigation.goBack();
     }
@@ -350,6 +357,54 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
               }}
             />
           )}
+        </View>
+
+        {/* Note Requirement Section */}
+        <View style={{ marginBottom: 24 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 12,
+            }}
+          >
+            <View style={{ flex: 1 }}>
+              <SectionHeader>Require Note for Completion</SectionHeader>
+              <TextBody style={{ ...fonts.styles.bodySmall, marginTop: 4 }}>
+                When enabled, this habit cannot be marked as completed without adding a note
+              </TextBody>
+            </View>
+            <TouchableOpacity
+              style={{
+                width: 50,
+                height: 30,
+                borderRadius: 15,
+                backgroundColor: requiresNote
+                  ? colors.primary
+                  : colors.border,
+                alignItems: requiresNote ? "flex-end" : "flex-start",
+                justifyContent: "center",
+                paddingHorizontal: 2,
+                marginLeft: 16,
+              }}
+              onPress={() => setRequiresNote(!requiresNote)}
+            >
+              <View
+                style={{
+                  width: 26,
+                  height: 26,
+                  borderRadius: 13,
+                  backgroundColor: colors.background,
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+                  elevation: 5,
+                }}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <Button label={editing ? "Save" : "Create"} onPress={onSave} />

@@ -74,8 +74,14 @@ const HomeScreen: React.FC<any> = ({ navigation }) => {
         removeCompletion(completion.id);
       }
     } else {
-      // Add completion
-      completeHabitToday(habit.id, "", date);
+      // Check if habit requires a note
+      if (habit.requiresNote) {
+        // Navigate to habit detail screen for note-required habits
+        navigation.navigate("HabitDetail", { id: habit.id });
+      } else {
+        // Add completion directly for habits that don't require notes
+        completeHabitToday(habit.id, "", date);
+      }
     }
   };
 

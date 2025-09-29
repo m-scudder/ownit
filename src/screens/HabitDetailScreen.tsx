@@ -25,9 +25,13 @@ const HabitDetailScreen: React.FC<any> = ({ route, navigation }) => {
   }
 
   const onComplete = () => {
-    if (!note.trim()) return;
+    // For habits that require notes, check if note is provided
+    if (habit.requiresNote && !note.trim()) {
+      return; // Don't complete if note is required but not provided
+    }
     completeHabitToday(habit.id, note.trim());
     setNote("");
+    navigation.goBack(); // Navigate back after completion
   };
 
   return (
@@ -36,11 +40,15 @@ const HabitDetailScreen: React.FC<any> = ({ route, navigation }) => {
       <TextField
         value={note}
         onChangeText={setNote}
-        placeholder="Write a short note..."
+        placeholder={habit.requiresNote ? "Write a note (required)..." : "Write a short note (optional)..."}
         multiline
         style={{ marginBottom: 8 }}
       />
-      <Button label="Mark Completed" onPress={onComplete} />
+      <Button 
+        label="Mark Completed" 
+        onPress={onComplete}
+        disabled={habit.requiresNote && !note.trim()}
+      />
     </ScreenWithHeader>
   );
 };

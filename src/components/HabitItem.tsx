@@ -41,14 +41,24 @@ const HabitItemComponent: React.FC<Props> = ({
       <View style={{ flex: 1 }}>
         <View style={styles.nameContainer}>
           <Text style={styles.name}>{habit.name}</Text>
-          {habitHasReminder && (
-            <Ionicons
-              name="notifications"
-              size={16}
-              color={colors.primary || "#007AFF"}
-              style={styles.reminderIcon}
-            />
-          )}
+          <View style={styles.iconContainer}>
+            {habit.requiresNote && (
+              <Ionicons
+                name="document-text"
+                size={16}
+                color="#FF9500"
+                style={styles.noteIcon}
+              />
+            )}
+            {habitHasReminder && (
+              <Ionicons
+                name="notifications"
+                size={16}
+                color={colors.primary || "#007AFF"}
+                style={styles.reminderIcon}
+              />
+            )}
+          </View>
         </View>
         <Text style={styles.meta}>Streak: {streak}</Text>
         {isCompleted && (
@@ -71,7 +81,9 @@ const HabitItemComponent: React.FC<Props> = ({
       </View>
       {dueToday && !isPastDate && !isCompleted && (
         <TouchableOpacity onPress={onComplete} style={styles.completeBtn}>
-          <Text style={styles.completeText}>Complete</Text>
+          <Text style={styles.completeText}>
+            {habit.requiresNote ? "Add Note" : "Complete"}
+          </Text>
         </TouchableOpacity>
       )}
     </TouchableOpacity>
@@ -98,6 +110,13 @@ const getStyles = (colors: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
+    },
+    iconContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    noteIcon: {
+      marginLeft: 8,
     },
     name: {
       color: colors.text,
