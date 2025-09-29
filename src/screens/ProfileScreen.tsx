@@ -31,21 +31,6 @@ const ProfileScreen: React.FC<any> = () => {
             onValueChange={setNotificationsEnabled}
           />
         </View>
-        <TouchableOpacity
-          style={getStyles(colors).testButton}
-          onPress={async () => {
-            const hasPermission = await requestNotificationPermissions();
-            if (hasPermission) {
-              await testNotification();
-            } else {
-              console.log("Notification permission denied");
-            }
-          }}
-        >
-          <Text style={getStyles(colors).testButtonText}>
-            Test Notification
-          </Text>
-        </TouchableOpacity>
       </View>
 
       {/* Categories Row */}
