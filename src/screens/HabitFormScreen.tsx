@@ -76,8 +76,8 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
       updateHabit(editing.id, { name: name.trim(), categoryId, schedule, reminder });
       navigation.goBack();
     } else {
-      const newId = addHabit({ name: name.trim(), categoryId, schedule, reminder });
-      navigation.replace('HabitDetail', { id: newId });
+      addHabit({ name: name.trim(), categoryId, schedule, reminder });
+      navigation.goBack();
     }
   };
 
@@ -241,11 +241,12 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
               mode="time"
               is24Hour={true}
               display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              themeVariant={colors.background === '#FFFFFF' ? 'light' : 'dark'}
               onChange={(event, selectedTime) => {
-                setShowTimePicker(false);
-                if (selectedTime) {
+                if (event.type === 'set' && selectedTime) {
                   setReminderTime(selectedTime);
                 }
+                setShowTimePicker(false);
               }}
             />
           )}

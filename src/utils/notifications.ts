@@ -5,7 +5,6 @@ import type { Habit, HabitReminder, DayOfWeek } from '../types';
 // Configure notification behavior
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
     shouldShowBanner: true,
