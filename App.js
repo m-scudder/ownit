@@ -7,18 +7,37 @@ import HabitFormScreen from './src/screens/HabitFormScreen';
 import CategoriesScreen from './src/screens/CategoriesScreen';
 import HabitDetailScreen from './src/screens/HabitDetailScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import AllHabitsScreen from './src/screens/AllHabitsScreen';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from './src/theme/useTheme';
+import { CustomHeader } from './src/components/Neutral';
 
 const HomeStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+// Helper function to get screen titles
+const getScreenTitle = (routeName) => {
+  const titles = {
+    'HabitForm': 'Add Habit',
+    'Categories': 'Categories',
+    'AllHabits': 'Habits',
+    'HabitDetail': 'Habit Details',
+  };
+  return titles[routeName] || routeName;
+};
+
 function HomeStackNavigator() {
+  const { colors } = useTheme();
   return (
-    <HomeStack.Navigator>
+    <HomeStack.Navigator
+      screenOptions={{
+        header: ({ route }) => <CustomHeader title={getScreenTitle(route.name)} />,
+        contentStyle: { backgroundColor: colors.background }
+      }}
+    >
       <HomeStack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-      <HomeStack.Screen name="HabitDetail" component={HabitDetailScreen} options={{ title: 'Details' }} />
+      <HomeStack.Screen name="HabitDetail" component={HabitDetailScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -28,14 +47,15 @@ function ProfileStackNavigator() {
   return (
     <ProfileStack.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: colors.surface },
-        headerTintColor: colors.text,
+        header: ({ route }) => <CustomHeader title={getScreenTitle(route.name)} />,
         contentStyle: { backgroundColor: colors.background }
       }}
     >
       <ProfileStack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
-      <ProfileStack.Screen name="HabitForm" component={HabitFormScreen} options={{ title: 'Habit' }} />
-      <ProfileStack.Screen name="Categories" component={CategoriesScreen} options={{ title: 'Categories' }} />
+      <ProfileStack.Screen name="HabitForm" component={HabitFormScreen} />
+      <ProfileStack.Screen name="Categories" component={CategoriesScreen} />
+      <ProfileStack.Screen name="AllHabits" component={AllHabitsScreen} />
+      <ProfileStack.Screen name="HabitDetail" component={HabitDetailScreen} />
     </ProfileStack.Navigator>
   );
 }

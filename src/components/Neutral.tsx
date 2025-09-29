@@ -120,3 +120,6 @@ const getStyles = (colors: { background: string; surface: string; border: string
       marginBottom: 8
     }
   });
+
+// Export CustomHeader
+export { default as CustomHeader } from './CustomHeader';

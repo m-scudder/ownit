@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, FlatList, View } from 'react-native';
+import { Alert, FlatList, View, StyleSheet } from 'react-native';
 import { Screen, Title, TextField, Button, TextBody } from '../components/Neutral';
 import { useStore } from '../store/useStore';
 
@@ -30,12 +30,16 @@ const CategoriesScreen: React.FC<any> = () => {
 
   return (
     <Screen>
-      <Title style={{ marginBottom: 12 }}>Categories</Title>
-      <View style={{ flexDirection: 'row', marginBottom: 12, gap: 8 }}>
-        <View style={{ flex: 1 }}>
-          <TextField value={name} onChangeText={setName} placeholder="New category" />
+      <Title style={{ marginBottom: 16 }}>Categories</Title>
+      
+      {/* Add Category CTA */}
+      <View style={styles.ctaContainer}>
+        <View style={styles.addCategoryRow}>
+          <View style={{ flex: 1 }}>
+            <TextField value={name} onChangeText={setName} placeholder="New category name" />
+          </View>
+          <Button label="Add Category" onPress={onAdd} />
         </View>
-        <Button label="Add" onPress={onAdd} />
       </View>
 
       {categories.length === 0 ? (
@@ -59,5 +63,15 @@ const CategoriesScreen: React.FC<any> = () => {
     </Screen>
   );
 };
+
+const styles = StyleSheet.create({
+  ctaContainer: {
+    marginBottom: 20,
+  },
+  addCategoryRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+});
 
 export default CategoriesScreen;
