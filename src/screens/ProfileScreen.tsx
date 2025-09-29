@@ -3,6 +3,7 @@ import React from "react";
 import { View, Text, StyleSheet, Switch, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../theme/useTheme";
+import { fonts } from "../theme/fonts";
 import { Ionicons } from "@expo/vector-icons";
 import {
   testNotification,
@@ -99,12 +100,11 @@ const getStyles = (colors: any) =>
     },
     label: {
       color: colors.text,
-      fontSize: 16,
+      ...fonts.styles.body,
     },
     sectionTitle: {
       color: colors.text,
-      fontSize: 18,
-      fontWeight: "600",
+      ...fonts.styles.h3,
       marginBottom: 12,
     },
     managementCard: {
@@ -130,13 +130,12 @@ const getStyles = (colors: any) =>
     },
     cardTitle: {
       color: colors.text,
-      fontSize: 16,
-      fontWeight: "600",
+      ...fonts.styles.bodyMedium,
       marginBottom: 2,
     },
     cardSubtitle: {
       color: colors.subtext,
-      fontSize: 14,
+      ...fonts.styles.bodySmall,
     },
     testButton: {
       backgroundColor: colors.primary,
@@ -148,8 +147,7 @@ const getStyles = (colors: any) =>
     },
     testButtonText: {
       color: colors.background,
-      fontSize: 14,
-      fontWeight: "600",
+      ...fonts.styles.button,
     },
   });
 

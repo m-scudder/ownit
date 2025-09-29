@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
-  Screen,
+  ScreenWithHeader,
   Title,
   TextField,
   Button,
@@ -16,6 +16,7 @@ import {
 } from "../components/Neutral";
 import { useStore } from "../store/useStore";
 import { useTheme } from "../theme/useTheme";
+import { fonts } from "../theme/fonts";
 
 const CategoriesScreen: React.FC<any> = () => {
   const {
@@ -79,7 +80,7 @@ const CategoriesScreen: React.FC<any> = () => {
   };
 
   return (
-    <Screen>
+    <ScreenWithHeader>
       {/* Add Category CTA */}
       <View style={styles.ctaContainer}>
         <View style={styles.addCategoryRow}>
@@ -159,7 +160,7 @@ const CategoriesScreen: React.FC<any> = () => {
           No categories yet. Use the suggestions above or create your own!
         </TextBody>
       )}
-    </Screen>
+    </ScreenWithHeader>
   );
 };
 
@@ -181,7 +182,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   suggestedCategoryText: {
-    fontWeight: "500",
+    ...fonts.styles.label,
   },
   addIconButton: {
     width: 32,

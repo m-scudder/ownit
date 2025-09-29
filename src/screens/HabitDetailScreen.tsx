@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  Screen,
+  ScreenWithHeader,
   Title,
   TextField,
   Button,
@@ -18,9 +18,9 @@ const HabitDetailScreen: React.FC<any> = ({ route, navigation }) => {
 
   if (!habit) {
     return (
-      <Screen>
+      <ScreenWithHeader>
         <Title>Habit not found.</Title>
-      </Screen>
+      </ScreenWithHeader>
     );
   }
 
@@ -31,7 +31,7 @@ const HabitDetailScreen: React.FC<any> = ({ route, navigation }) => {
   };
 
   return (
-    <Screen>
+    <ScreenWithHeader>
       <Title style={{ marginBottom: 12 }}>{habit.name}</Title>
       <TextField
         value={note}
@@ -41,7 +41,7 @@ const HabitDetailScreen: React.FC<any> = ({ route, navigation }) => {
         style={{ marginBottom: 8 }}
       />
       <Button label="Mark Completed" onPress={onComplete} />
-    </Screen>
+    </ScreenWithHeader>
   );
 };
 

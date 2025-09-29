@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../theme/useTheme";
+import { fonts } from "../theme/fonts";
 
 interface CustomHeaderProps {
   title: string;
@@ -69,8 +70,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 18,
-    fontWeight: "600",
+    ...fonts.styles.h3,
     textAlign: "center",
   },
   rightSpacer: {

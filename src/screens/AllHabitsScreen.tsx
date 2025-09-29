@@ -6,9 +6,10 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { Screen, Title, TextBody, Button } from "../components/Neutral";
+import { ScreenWithHeader, Title, TextBody, Button } from "../components/Neutral";
 import { useStore } from "../store/useStore";
 import { useTheme } from "../theme/useTheme";
+import { fonts } from "../theme/fonts";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { SwipeListView } from "react-native-swipe-list-view";
@@ -188,7 +189,7 @@ const AllHabitsScreen: React.FC<any> = () => {
   };
 
   return (
-    <Screen>
+    <ScreenWithHeader>
       {habits.length === 0 ? (
         <View style={styles.emptyContainer}>
           <TextBody style={{ ...styles.emptyText, color: colors.subtext }}>
@@ -227,7 +228,7 @@ const AllHabitsScreen: React.FC<any> = () => {
       >
         <Ionicons name="add" size={24} color={colors.background} />
       </TouchableOpacity>
-    </Screen>
+    </ScreenWithHeader>
   );
 };
 
@@ -256,8 +257,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   categoryTitle: {
-    fontSize: 18,
-    fontWeight: "700",
+    ...fonts.styles.h2,
   },
   habitItem: {
     borderRadius: 8,
@@ -284,8 +284,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   habitName: {
-    fontSize: 15,
-    fontWeight: "600",
+    ...fonts.styles.bodyMedium,
     flex: 1,
   },
   habitMeta: {
@@ -294,7 +293,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   metaText: {
-    fontSize: 13,
+    ...fonts.styles.caption,
     color: "#666",
   },
   emptyContainer: {
@@ -304,7 +303,7 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
   },
   emptyText: {
-    fontSize: 16,
+    ...fonts.styles.body,
     textAlign: "center",
   },
   listContainer: {
@@ -329,8 +328,7 @@ const styles = StyleSheet.create({
   },
   hiddenButtonText: {
     color: "white",
-    fontSize: 11,
-    fontWeight: "600",
+    ...fonts.styles.captionSmall,
     marginTop: 2,
   },
 });

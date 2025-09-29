@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { View, TouchableOpacity, ScrollView, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import {
-  Screen,
+  ScreenWithHeader,
   Title,
   TextField,
   Button,
@@ -12,6 +12,7 @@ import {
 } from "../components/Neutral";
 import { useStore } from "../store/useStore";
 import { useTheme } from "../theme/useTheme";
+import { fonts } from "../theme/fonts";
 import type {
   DayOfWeek,
   FrequencyType,
@@ -145,7 +146,7 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
     : [];
 
   return (
-    <Screen>
+    <ScreenWithHeader>
       <Title style={{ marginBottom: 24 }}>
         {editing ? "Edit Habit" : "New Habit"}
       </Title>
@@ -204,7 +205,7 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
                   }}
                   onPress={() => onSmartSuggestion(suggestion)}
                 >
-                  <TextBody style={{ fontSize: 14 }}>{suggestion}</TextBody>
+                  <TextBody style={{ ...fonts.styles.bodySmall }}>{suggestion}</TextBody>
                 </TouchableOpacity>
               ))}
             </View>
@@ -257,7 +258,7 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
             <SectionHeader style={{ marginBottom: 12 }}>
               Days of month
             </SectionHeader>
-            <TextBody style={{ marginBottom: 8, fontSize: 14 }}>
+            <TextBody style={{ marginBottom: 8, ...fonts.styles.bodySmall }}>
               Comma-separated days (1-31). Example: 1,15,28
             </TextBody>
             <TextField
@@ -325,7 +326,7 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
               onPress={() => setShowTimePicker(true)}
             >
               <TextBody>Reminder time</TextBody>
-              <TextBody style={{ color: colors.primary, fontWeight: "600" }}>
+              <TextBody style={{ color: colors.primary, ...fonts.styles.button }}>
                 {reminderTime.toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -353,7 +354,7 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
 
         <Button label={editing ? "Save" : "Create"} onPress={onSave} />
       </ScrollView>
-    </Screen>
+    </ScreenWithHeader>
   );
 };
 

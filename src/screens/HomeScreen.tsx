@@ -18,6 +18,7 @@ import {
 } from "@/utils/dates";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../theme/useTheme";
+import { fonts } from "../theme/fonts";
 import { format } from "date-fns";
 import type { Habit, Completion, Category } from "../types";
 
@@ -269,7 +270,6 @@ const HomeScreen: React.FC<any> = ({ navigation }) => {
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: 16,
         }}
       >
         <Title>
@@ -384,8 +384,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   categoryTitle: {
-    fontSize: 18,
-    fontWeight: "700",
+    ...fonts.styles.h2,
   },
   habitItem: {
     borderRadius: 8,
@@ -418,8 +417,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   habitName: {
-    fontSize: 15,
-    fontWeight: "600",
+    ...fonts.styles.bodyMedium,
     flex: 1,
   },
   habitMeta: {
@@ -428,7 +426,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   metaText: {
-    fontSize: 13,
+    ...fonts.styles.caption,
     color: "#666",
   },
   emptyContainer: {
@@ -438,7 +436,7 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
   },
   emptyText: {
-    fontSize: 16,
+    ...fonts.styles.body,
     textAlign: "center",
   },
   listContainer: {

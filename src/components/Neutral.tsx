@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../theme/useTheme";
+import { fonts } from "../theme/fonts";
 
 export const Screen: React.FC<{
   children: React.ReactNode;
@@ -18,6 +19,15 @@ export const Screen: React.FC<{
   const { colors } = useTheme();
   const styles = getStyles(colors);
   return <SafeAreaView style={[styles.screen, style]}>{children}</SafeAreaView>;
+};
+
+export const ScreenWithHeader: React.FC<{
+  children: React.ReactNode;
+  style?: ViewStyle;
+}> = ({ children, style }) => {
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
+  return <SafeAreaView style={[styles.screenWithHeader, style]}>{children}</SafeAreaView>;
 };
 
 export const Title: React.FC<{
@@ -145,24 +155,24 @@ const getStyles = (colors: {
       flex: 1,
       backgroundColor: colors.background,
       paddingHorizontal: 16,
-      paddingVertical: 16,
-      paddingTop: 0,
+      paddingTop: 16,
+    },
+    screenWithHeader: {
+      flex: 1,
+      backgroundColor: colors.background,
+      paddingHorizontal: 16,
     },
     title: {
       color: colors.text,
-      fontSize: 20,
-      fontWeight: "600",
+      ...fonts.styles.h1,
     },
     sectionHeader: {
       color: colors.subtext,
-      fontSize: 14,
-      fontWeight: "500",
-      textTransform: "uppercase",
-      letterSpacing: 0.5,
+      ...fonts.styles.sectionHeader,
     },
     text: {
       color: colors.text,
-      fontSize: 16,
+      ...fonts.styles.body,
     },
     button: {
       backgroundColor: colors.surface,
@@ -174,7 +184,7 @@ const getStyles = (colors: {
     },
     buttonText: {
       color: colors.text,
-      fontWeight: "600",
+      ...fonts.styles.button,
     },
     input: {
       backgroundColor: colors.surface,
@@ -182,6 +192,7 @@ const getStyles = (colors: {
       paddingHorizontal: 12,
       paddingVertical: 10,
       borderRadius: 10,
+      ...fonts.styles.input,
     },
     row: {
       flexDirection: "row",

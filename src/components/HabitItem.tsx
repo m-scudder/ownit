@@ -2,6 +2,7 @@ import React, { memo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import type { Habit, Completion } from "../types";
 import { useTheme } from "../theme/useTheme";
+import { fonts } from "../theme/fonts";
 import {
   calculateCurrentStreak,
   isHabitDueOnDate,
@@ -100,8 +101,7 @@ const getStyles = (colors: {
     },
     name: {
       color: colors.text,
-      fontSize: 16,
-      fontWeight: "600",
+      ...fonts.styles.bodyMedium,
       flex: 1,
     },
     reminderIcon: {
@@ -124,6 +124,6 @@ const getStyles = (colors: {
     },
     completeText: {
       color: colors.text,
-      fontWeight: "600",
+      ...fonts.styles.button,
     },
   });
