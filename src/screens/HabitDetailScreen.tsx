@@ -41,10 +41,10 @@ const HabitDetailScreen: React.FC<any> = ({ route, navigation }) => {
 
       <View style={{ height: 16 }} />
 
-      {/* <View style={{ flexDirection: 'row', gap: 8 }}>
+      <View style={{ flexDirection: 'row', gap: 8 }}>
         <Button label="Edit" onPress={() => navigation.navigate('HabitForm', { id: habit.id })} />
         <Button label="Delete" onPress={onDeleteHabit} />
-      </View> */}
+      </View>
     </Screen>
   );
 };

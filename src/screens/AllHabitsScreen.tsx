@@ -1,14 +1,16 @@
 import React, { useMemo } from 'react';
-import { FlatList, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { FlatList, View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Screen, Title, TextBody, Button } from '../components/Neutral';
 import { useStore } from '../store/useStore';
 import { useTheme } from '../theme/useTheme';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+import { SwipeListView } from 'react-native-swipe-list-view';
 import type { Habit, Completion, Category } from '../types';
 
 const AllHabitsScreen: React.FC<any> = () => {
   const navigation = useNavigation<any>();
-  const { habits, completions, categories } = useStore();
+  const { habits, completions, categories, deleteHabit } = useStore();
   const { colors } = useTheme();
 
   const getCategoryName = (categoryId?: string | null) => {
@@ -64,6 +66,21 @@ const AllHabitsScreen: React.FC<any> = () => {
     }
   };
 
+  const handleDeleteHabit = (habit: Habit) => {
+    Alert.alert(
+      'Delete Habit',
+      `Are you sure you want to delete "${habit.name}"? This will remove the habit and all its completions.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive', 
+          onPress: () => deleteHabit(habit.id) 
+        }
+      ]
+    );
+  };
+
   const renderItem = ({ item }: { item: { type: 'header' | 'habit'; categoryName?: string; habit?: Habit } }) => {
     if (item.type === 'header') {
       return (
@@ -82,7 +99,8 @@ const AllHabitsScreen: React.FC<any> = () => {
     return (
       <TouchableOpacity 
         style={[styles.habitItem, { backgroundColor: colors.surface, borderColor: colors.border }]}
-        onPress={() => navigation.navigate('HabitDetail', { id: habit.id })}
+        onPress={() => navigation.navigate('HabitForm', { id: habit.id })}
+        activeOpacity={0.7}
       >
         <View style={styles.habitContent}>
           <TextBody style={{ ...styles.habitName, color: colors.text }}>{habit.name}</TextBody>
@@ -96,7 +114,35 @@ const AllHabitsScreen: React.FC<any> = () => {
             </TextBody>
           </View>
         </View>
+        
+        <View style={styles.arrowContainer}>
+          <Ionicons 
+            name="chevron-forward" 
+            size={20} 
+            color={colors.text === '#FFFFFF' ? '#CCCCCC' : '#666666'} 
+          />
+        </View>
       </TouchableOpacity>
+    );
+  };
+
+  const renderHiddenItem = ({ item }: { item: { type: 'header' | 'habit'; categoryName?: string; habit?: Habit } }) => {
+    if (item.type === 'header') {
+      return <View style={{ height: 0 }} />;
+    }
+
+    const habit = item.habit!;
+
+    return (
+      <View style={styles.hiddenItemContainer}>
+        <TouchableOpacity
+          style={[styles.hiddenButton, styles.deleteButton, { backgroundColor: '#FF4444' }]}
+          onPress={() => handleDeleteHabit(habit)}
+        >
+          <Ionicons name="trash-outline" size={20} color="white" />
+          <TextBody style={styles.hiddenButtonText}>Delete</TextBody>
+        </TouchableOpacity>
+      </View>
     );
   };
 
@@ -117,7 +163,7 @@ const AllHabitsScreen: React.FC<any> = () => {
           </TextBody>
         </View>
       ) : (
-        <FlatList
+        <SwipeListView
           data={categorizedHabits}
           keyExtractor={(item, index) => 
             item.type === 'header' ? `header-${item.categoryName}` : `habit-${item.habit!.id}`
@@ -125,7 +171,16 @@ const AllHabitsScreen: React.FC<any> = () => {
           contentContainerStyle={styles.listContainer}
           ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
           renderItem={renderItem}
+          renderHiddenItem={renderHiddenItem}
+          rightOpenValue={-80}
+          disableRightSwipe={true}
           showsVerticalScrollIndicator={false}
+          stopRightSwipe={-80}
+          stopLeftSwipe={0}
+          swipeToOpenPercent={30}
+          swipeToClosePercent={15}
+          friction={1000}
+          tension={100}
         />
       )}
     </Screen>
@@ -149,9 +204,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   habitContent: {
     flex: 1,
+  },
+  arrowContainer: {
+    marginLeft: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   habitName: {
     fontSize: 15,
@@ -179,6 +241,29 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 20,
+  },
+  hiddenItemContainer: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    justifyContent: 'flex-end',
+    height: '100%',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  hiddenButton: {
+    width: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+  },
+  deleteButton: {
+    backgroundColor: '#FF4444',
+  },
+  hiddenButtonText: {
+    color: 'white',
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 2,
   },
 });
 
