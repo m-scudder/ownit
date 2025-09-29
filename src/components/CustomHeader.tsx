@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -12,7 +12,7 @@ interface CustomHeaderProps {
 
 const CustomHeader: React.FC<CustomHeaderProps> = ({ title }) => {
   const navigation = useNavigation();
-  const { colors } = useTheme();
+  const { colors, mode } = useTheme();
   const insets = useSafeAreaInsets();
 
   const handleBackPress = () => {
@@ -22,16 +22,22 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ title }) => {
   };
 
   return (
-    <View
-      style={[
-        styles.header,
-        {
-          backgroundColor: colors.surface,
-          borderBottomColor: colors.border,
-          paddingTop: insets.top,
-        },
-      ]}
-    >
+    <>
+      <StatusBar
+        barStyle={mode === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.surface}
+        translucent={false}
+      />
+      <View
+        style={[
+          styles.header,
+          {
+            backgroundColor: colors.surface,
+            borderBottomColor: colors.border,
+            paddingTop: insets.top,
+          },
+        ]}
+      >
       <TouchableOpacity
         style={styles.backButton}
         onPress={handleBackPress}
@@ -48,7 +54,8 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({ title }) => {
 
       {/* Empty view to balance the layout */}
       <View style={styles.rightSpacer} />
-    </View>
+      </View>
+    </>
   );
 };
 

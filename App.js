@@ -3,6 +3,7 @@ import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { StatusBar } from "react-native";
 import HomeScreen from "./src/screens/HomeScreen";
 import HabitFormScreen from "./src/screens/HabitFormScreen";
 import CategoriesScreen from "./src/screens/CategoriesScreen";
@@ -97,6 +98,11 @@ export default function App() {
   };
   return (
     <SafeAreaProvider>
+      <StatusBar
+        barStyle={mode === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
+        translucent={false}
+      />
       <NavigationContainer theme={navTheme}>
         <Tab.Navigator
           screenOptions={({ route }) => ({
