@@ -4,12 +4,76 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Category, Completion, Habit, HabitSchedule, RootState, ThemeMode } from '../types';
 import { formatDateKey } from '../utils/dates';
 
+// Suggested categories for first-time users
+const SUGGESTED_CATEGORIES = [
+  'Health & Fitness',
+  'Mind & Well-being',
+  'Productivity & Learning',
+  'Personal Growth & Lifestyle'
+];
+
+// Smart habit suggestions based on categories
+const SMART_HABIT_SUGGESTIONS: Record<string, string[]> = {
+  'Health & Fitness': [
+    'Drink 8 glasses of water',
+    'Exercise for 30 minutes',
+    'Take 10,000 steps',
+    'Eat 5 servings of fruits/vegetables',
+    'Get 8 hours of sleep',
+    'Stretch for 10 minutes',
+    'Take vitamins',
+    'Walk outside for 15 minutes'
+  ],
+  'Mind & Well-being': [
+    'Meditate for 10 minutes',
+    'Practice gratitude',
+    'Journal for 5 minutes',
+    'Take deep breaths',
+    'Practice mindfulness',
+    'Read for 20 minutes',
+    'Listen to calming music',
+    'Take a digital detox break'
+  ],
+  'Productivity & Learning': [
+    'Read for 30 minutes',
+    'Learn something new',
+    'Practice a skill',
+    'Review daily goals',
+    'Organize workspace',
+    'Take notes',
+    'Complete one important task',
+    'Plan tomorrow'
+  ],
+  'Personal Growth & Lifestyle': [
+    'Practice a hobby',
+    'Connect with friends/family',
+    'Declutter one area',
+    'Try something new',
+    'Practice self-care',
+    'Set personal boundaries',
+    'Express creativity',
+    'Reflect on values'
+  ]
+};
+
+// Smart category icons/emojis
+const CATEGORY_ICONS: Record<string, string> = {
+  'Health & Fitness': '💪',
+  'Mind & Well-being': '🧘',
+  'Productivity & Learning': '📚',
+  'Personal Growth & Lifestyle': '🌱'
+};
+
 const generateId = (): string => `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
 interface Actions {
   addCategory: (name: string) => string;
   updateCategory: (id: string, name: string) => void;
   deleteCategory: (id: string) => void;
+  getSuggestedCategories: () => string[];
+  getSmartHabitSuggestions: (categoryName: string) => string[];
+  getCategoryIcon: (categoryName: string) => string;
+  getSmartScheduleSuggestion: (categoryName: string) => HabitSchedule;
 
   addHabit: (input: { name: string; categoryId?: string | null; schedule: HabitSchedule }) => string;
   updateHabit: (id: string, updates: Partial<Pick<Habit, 'name' | 'categoryId' | 'schedule'>>) => void;
@@ -44,6 +108,24 @@ export const useStore = create<RootState & Actions>()(
           categories: s.categories.filter((c) => c.id !== id),
           habits: s.habits.map((h) => (h.categoryId === id ? { ...h, categoryId: null } : h))
         }));
+      },
+      getSuggestedCategories: () => SUGGESTED_CATEGORIES,
+      getSmartHabitSuggestions: (categoryName: string) => SMART_HABIT_SUGGESTIONS[categoryName] || [],
+      getCategoryIcon: (categoryName: string) => CATEGORY_ICONS[categoryName] || '📝',
+      getSmartScheduleSuggestion: (categoryName: string) => {
+        // Smart scheduling based on category type
+        switch (categoryName) {
+          case 'Health & Fitness':
+            return { type: 'daily' }; // Most health habits are daily
+          case 'Mind & Well-being':
+            return { type: 'daily' }; // Mindfulness practices are typically daily
+          case 'Productivity & Learning':
+            return { type: 'weekly', daysOfWeek: [1, 3, 5] }; // Weekdays for learning
+          case 'Personal Growth & Lifestyle':
+            return { type: 'weekly', daysOfWeek: [0, 6] }; // Weekends for personal time
+          default:
+            return { type: 'daily' };
+        }
       },
 
       addHabit: ({ name, categoryId = null, schedule }) => {

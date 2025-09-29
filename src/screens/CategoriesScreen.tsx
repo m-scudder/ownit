@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Alert, FlatList, View, StyleSheet } from 'react-native';
+import { Alert, FlatList, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Screen, Title, TextField, Button, TextBody } from '../components/Neutral';
 import { useStore } from '../store/useStore';
+import { useTheme } from '../theme/useTheme';
 
 const CategoriesScreen: React.FC<any> = () => {
-  const { categories, addCategory, updateCategory, deleteCategory } = useStore();
+  const { categories, addCategory, updateCategory, deleteCategory, getSuggestedCategories, getCategoryIcon } = useStore();
+  const { colors } = useTheme();
   const [name, setName] = useState('');
 
   const onAdd = () => {
@@ -12,6 +14,18 @@ const CategoriesScreen: React.FC<any> = () => {
     if (!trimmed) return;
     addCategory(trimmed);
     setName('');
+  };
+
+  const onAddSuggested = (categoryName: string) => {
+    addCategory(categoryName);
+    // Show a smart completion message
+    setTimeout(() => {
+      Alert.alert(
+        '🎉 Great choice!', 
+        `You've added "${categoryName}". Now you can create habits in this category and I'll suggest smart scheduling options!`,
+        [{ text: 'Awesome!', style: 'default' }]
+      );
+    }, 100);
   };
 
   const onEdit = (id: string) => {
@@ -42,9 +56,35 @@ const CategoriesScreen: React.FC<any> = () => {
         </View>
       </View>
 
-      {categories.length === 0 ? (
-        <TextBody>No categories yet.</TextBody>
-      ) : (
+      {/* Show suggested categories if user has fewer than 3 categories */}
+      {categories.length < 3 && (
+        <View style={{ marginBottom: 20 }}>
+          <TextBody style={{ marginBottom: 16 }}>
+            {categories.length === 0 
+              ? "🎯 Let's organize your habits! Choose categories that match your goals:" 
+              : "✨ Add more categories to better organize your habits:"
+            }
+          </TextBody>
+          <View style={styles.suggestedCategoriesContainer}>
+            {getSuggestedCategories()
+              .filter(categoryName => !categories.some(cat => cat.name === categoryName))
+              .map((categoryName, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={{ ...styles.suggestedCategoryButton, backgroundColor: colors.primary }}
+                  onPress={() => onAddSuggested(categoryName)}
+                >
+                  <TextBody style={{ ...styles.suggestedCategoryText, color: colors.background }}>
+                  {getCategoryIcon(categoryName)} {categoryName}
+                </TextBody>
+                </TouchableOpacity>
+              ))}
+          </View>
+        </View>
+      )}
+
+      {/* Show existing categories */}
+      {categories.length > 0 ? (
         <FlatList
           data={categories}
           keyExtractor={(c) => c.id}
@@ -59,6 +99,10 @@ const CategoriesScreen: React.FC<any> = () => {
             </View>
           )}
         />
+      ) : (
+        <TextBody style={{ textAlign: 'center', marginTop: 20, opacity: 0.7 }}>
+          No categories yet. Use the suggestions above or create your own!
+        </TextBody>
       )}
     </Screen>
   );
@@ -71,6 +115,18 @@ const styles = StyleSheet.create({
   addCategoryRow: {
     flexDirection: 'row',
     gap: 8,
+  },
+  suggestedCategoriesContainer: {
+    gap: 12,
+  },
+  suggestedCategoryButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  suggestedCategoryText: {
+    fontWeight: '500',
   },
 });
 

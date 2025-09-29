@@ -72,6 +72,12 @@ export const Chip: React.FC<{ label: string; selected?: boolean; onPress: () => 
   );
 };
 
+export const SectionHeader: React.FC<{ children: React.ReactNode; style?: TextStyle }> = ({ children, style }) => {
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
+  return <Text style={[styles.sectionHeader, style]}>{children}</Text>;
+};
+
 const getStyles = (colors: { background: string; surface: string; border: string; text: string; subtext: string }) =>
   StyleSheet.create({
     screen: {
@@ -85,6 +91,13 @@ const getStyles = (colors: { background: string; surface: string; border: string
       color: colors.text,
       fontSize: 20,
       fontWeight: '600'
+    },
+    sectionHeader: {
+      color: colors.subtext,
+      fontSize: 14,
+      fontWeight: '500',
+      textTransform: 'uppercase',
+      letterSpacing: 0.5
     },
     text: {
       color: colors.text,
