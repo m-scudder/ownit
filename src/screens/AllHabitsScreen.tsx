@@ -1,12 +1,19 @@
-import React, { useMemo } from 'react';
-import { FlatList, View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { Screen, Title, TextBody, Button } from '../components/Neutral';
-import { useStore } from '../store/useStore';
-import { useTheme } from '../theme/useTheme';
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
-import { SwipeListView } from 'react-native-swipe-list-view';
-import type { Habit, Completion, Category } from '../types';
+import React, { useMemo } from "react";
+import {
+  FlatList,
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from "react-native";
+import { Screen, Title, TextBody, Button } from "../components/Neutral";
+import { useStore } from "../store/useStore";
+import { useTheme } from "../theme/useTheme";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
+import { SwipeListView } from "react-native-swipe-list-view";
+import type { Habit, Completion, Category } from "../types";
+import { hasReminder } from "../utils/dates";
 
 const AllHabitsScreen: React.FC<any> = () => {
   const navigation = useNavigation<any>();
@@ -14,75 +21,85 @@ const AllHabitsScreen: React.FC<any> = () => {
   const { colors } = useTheme();
 
   const getCategoryName = (categoryId?: string | null) => {
-    if (!categoryId) return 'No Category';
-    const category = categories.find(c => c.id === categoryId);
-    return category?.name || 'Unknown Category';
+    if (!categoryId) return "No Category";
+    const category = categories.find((c) => c.id === categoryId);
+    return category?.name || "Unknown Category";
   };
 
   // Group habits by category and sort alphabetically
   const categorizedHabits = useMemo(() => {
     const grouped: { [key: string]: Habit[] } = {};
-    
+
     // Group habits by category
-    habits.forEach(habit => {
+    habits.forEach((habit) => {
       const categoryName = getCategoryName(habit.categoryId);
       if (!grouped[categoryName]) {
         grouped[categoryName] = [];
       }
       grouped[categoryName].push(habit);
     });
-    
+
     // Sort categories alphabetically and sort habits within each category
     const sortedCategories = Object.keys(grouped).sort();
-    const result: Array<{ type: 'header' | 'habit'; categoryName?: string; habit?: Habit }> = [];
-    
-    sortedCategories.forEach(categoryName => {
+    const result: Array<{
+      type: "header" | "habit";
+      categoryName?: string;
+      habit?: Habit;
+    }> = [];
+
+    sortedCategories.forEach((categoryName) => {
       // Add category header
-      result.push({ type: 'header', categoryName });
-      
+      result.push({ type: "header", categoryName });
+
       // Add habits sorted alphabetically
-      const sortedHabits = grouped[categoryName].sort((a, b) => a.name.localeCompare(b.name));
-      sortedHabits.forEach(habit => {
-        result.push({ type: 'habit', habit });
+      const sortedHabits = grouped[categoryName].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      );
+      sortedHabits.forEach((habit) => {
+        result.push({ type: "habit", habit });
       });
     });
-    
+
     return result;
   }, [habits, categories]);
 
   const getScheduleText = (habit: Habit) => {
     const { schedule } = habit;
     switch (schedule.type) {
-      case 'daily':
-        return 'Daily';
-      case 'weekly':
+      case "daily":
+        return "Daily";
+      case "weekly":
         return `Weekly (${schedule.daysOfWeek?.length || 0} days)`;
-      case 'monthly':
+      case "monthly":
         return `Monthly (${schedule.daysOfMonth?.length || 0} days)`;
-      case 'custom':
-        return 'Custom';
+      case "custom":
+        return "Custom";
       default:
-        return 'Unknown';
+        return "Unknown";
     }
   };
 
   const handleDeleteHabit = (habit: Habit) => {
     Alert.alert(
-      'Delete Habit',
+      "Delete Habit",
       `Are you sure you want to delete "${habit.name}"? This will remove the habit and all its completions.`,
       [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Delete', 
-          style: 'destructive', 
-          onPress: () => deleteHabit(habit.id) 
-        }
-      ]
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => deleteHabit(habit.id),
+        },
+      ],
     );
   };
 
-  const renderItem = ({ item }: { item: { type: 'header' | 'habit'; categoryName?: string; habit?: Habit } }) => {
-    if (item.type === 'header') {
+  const renderItem = ({
+    item,
+  }: {
+    item: { type: "header" | "habit"; categoryName?: string; habit?: Habit };
+  }) => {
+    if (item.type === "header") {
       return (
         <View style={styles.categoryHeader}>
           <Title style={{ ...styles.categoryTitle, color: colors.text }}>
@@ -95,16 +112,32 @@ const AllHabitsScreen: React.FC<any> = () => {
     const habit = item.habit!;
     const categoryName = getCategoryName(habit.categoryId);
     const scheduleText = getScheduleText(habit);
+    const habitHasReminder = hasReminder(habit);
 
     return (
-      <TouchableOpacity 
-        style={[styles.habitItem, { backgroundColor: colors.surface, borderColor: colors.border }]}
-        onPress={() => navigation.navigate('HabitForm', { id: habit.id })}
+      <TouchableOpacity
+        style={[
+          styles.habitItem,
+          { backgroundColor: colors.surface, borderColor: colors.border },
+        ]}
+        onPress={() => navigation.navigate("HabitForm", { id: habit.id })}
         activeOpacity={0.7}
       >
         <View style={styles.habitContent}>
-          <TextBody style={{ ...styles.habitName, color: colors.text }}>{habit.name}</TextBody>
-          
+          <View style={styles.habitNameContainer}>
+            <TextBody style={{ ...styles.habitName, color: colors.text }}>
+              {habit.name}
+            </TextBody>
+            {habitHasReminder && (
+              <Ionicons
+                name="notifications"
+                size={16}
+                color={colors.primary || "#007AFF"}
+                style={styles.reminderIcon}
+              />
+            )}
+          </View>
+
           <View style={styles.habitMeta}>
             <TextBody style={{ ...styles.metaText, color: colors.subtext }}>
               {categoryName}
@@ -114,20 +147,24 @@ const AllHabitsScreen: React.FC<any> = () => {
             </TextBody>
           </View>
         </View>
-        
+
         <View style={styles.arrowContainer}>
-          <Ionicons 
-            name="chevron-forward" 
-            size={20} 
-            color={colors.text === '#FFFFFF' ? '#CCCCCC' : '#666666'} 
+          <Ionicons
+            name="chevron-forward"
+            size={20}
+            color={colors.text === "#FFFFFF" ? "#CCCCCC" : "#666666"}
           />
         </View>
       </TouchableOpacity>
     );
   };
 
-  const renderHiddenItem = ({ item }: { item: { type: 'header' | 'habit'; categoryName?: string; habit?: Habit } }) => {
-    if (item.type === 'header') {
+  const renderHiddenItem = ({
+    item,
+  }: {
+    item: { type: "header" | "habit"; categoryName?: string; habit?: Habit };
+  }) => {
+    if (item.type === "header") {
       return <View style={{ height: 0 }} />;
     }
 
@@ -136,7 +173,11 @@ const AllHabitsScreen: React.FC<any> = () => {
     return (
       <View style={styles.hiddenItemContainer}>
         <TouchableOpacity
-          style={[styles.hiddenButton, styles.deleteButton, { backgroundColor: '#FF4444' }]}
+          style={[
+            styles.hiddenButton,
+            styles.deleteButton,
+            { backgroundColor: "#FF4444" },
+          ]}
           onPress={() => handleDeleteHabit(habit)}
         >
           <Ionicons name="trash-outline" size={20} color="white" />
@@ -147,15 +188,7 @@ const AllHabitsScreen: React.FC<any> = () => {
   };
 
   return (
-    <Screen>     
-      {/* Add Habit CTA */}
-      <View style={styles.ctaContainer}>
-        <Button 
-          label="Add New Habit" 
-          onPress={() => navigation.navigate('HabitForm')}
-        />
-      </View>
-      
+    <Screen>
       {habits.length === 0 ? (
         <View style={styles.emptyContainer}>
           <TextBody style={{ ...styles.emptyText, color: colors.subtext }}>
@@ -165,8 +198,10 @@ const AllHabitsScreen: React.FC<any> = () => {
       ) : (
         <SwipeListView
           data={categorizedHabits}
-          keyExtractor={(item, index) => 
-            item.type === 'header' ? `header-${item.categoryName}` : `habit-${item.habit!.id}`
+          keyExtractor={(item, index) =>
+            item.type === "header"
+              ? `header-${item.categoryName}`
+              : `habit-${item.habit!.id}`
           }
           contentContainerStyle={styles.listContainer}
           ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
@@ -183,13 +218,37 @@ const AllHabitsScreen: React.FC<any> = () => {
           tension={100}
         />
       )}
+
+      {/* Floating Action Button */}
+      <TouchableOpacity
+        style={[styles.fab, { backgroundColor: colors.primary }]}
+        onPress={() => navigation.navigate("HabitForm")}
+        activeOpacity={0.8}
+      >
+        <Ionicons name="add" size={24} color={colors.background} />
+      </TouchableOpacity>
     </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  ctaContainer: {
-    marginBottom: 12,
+  fab: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
   },
   categoryHeader: {
     marginTop: 16,
@@ -198,71 +257,80 @@ const styles = StyleSheet.create({
   },
   categoryTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   habitItem: {
     borderRadius: 8,
     padding: 12,
     borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   habitContent: {
     flex: 1,
   },
+  habitNameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 6,
+  },
+  reminderIcon: {
+    marginLeft: 8,
+  },
   arrowContainer: {
     marginLeft: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   habitName: {
     fontSize: 15,
-    fontWeight: '600',
-    marginBottom: 6,
+    fontWeight: "600",
+    flex: 1,
   },
   habitMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   metaText: {
     fontSize: 13,
-    color: '#666',
+    color: "#666",
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingVertical: 40,
   },
   emptyText: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   listContainer: {
     paddingBottom: 20,
   },
   hiddenItemContainer: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    justifyContent: 'flex-end',
-    height: '100%',
+    flexDirection: "row",
+    alignItems: "stretch",
+    justifyContent: "flex-end",
+    height: "100%",
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   hiddenButton: {
     width: 80,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 12,
   },
   deleteButton: {
-    backgroundColor: '#FF4444',
+    backgroundColor: "#FF4444",
   },
   hiddenButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: "600",
     marginTop: 2,
   },
 });

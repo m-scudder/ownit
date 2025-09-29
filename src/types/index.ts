@@ -1,4 +1,4 @@
-export type FrequencyType = 'daily' | 'weekly' | 'monthly' | 'custom';
+export type FrequencyType = "daily" | "weekly" | "monthly" | "custom";
 
 export type DayOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0=Sunday
 
@@ -44,4 +44,4 @@ export interface RootState {
   theme: ThemeMode;
 }
 
-export type ThemeMode = 'light' | 'dark';
+export type ThemeMode = "light" | "dark";

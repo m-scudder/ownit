@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
-import { getColors, type ThemeColors } from './colors';
-import { useStore } from '../store/useStore';
-import type { ThemeMode } from '../types';
+import { useMemo } from "react";
+import { getColors, type ThemeColors } from "./colors";
+import { useStore } from "../store/useStore";
+import type { ThemeMode } from "../types";
 
 export interface Theme {
   mode: ThemeMode;
@@ -19,5 +19,3 @@ export const useTheme = (): Theme => {
 
   return { mode, colors, setTheme, toggleTheme };
 };
-
-

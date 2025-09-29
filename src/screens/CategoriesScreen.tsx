@@ -1,19 +1,39 @@
-import React, { useState } from 'react';
-import { Alert, FlatList, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Screen, Title, TextField, Button, TextBody } from '../components/Neutral';
-import { useStore } from '../store/useStore';
-import { useTheme } from '../theme/useTheme';
+import React, { useState } from "react";
+import {
+  Alert,
+  FlatList,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import {
+  Screen,
+  Title,
+  TextField,
+  Button,
+  TextBody,
+} from "../components/Neutral";
+import { useStore } from "../store/useStore";
+import { useTheme } from "../theme/useTheme";
 
 const CategoriesScreen: React.FC<any> = () => {
-  const { categories, addCategory, updateCategory, deleteCategory, getSuggestedCategories, getCategoryIcon } = useStore();
+  const {
+    categories,
+    addCategory,
+    updateCategory,
+    deleteCategory,
+    getSuggestedCategories,
+    getCategoryIcon,
+  } = useStore();
   const { colors } = useTheme();
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
 
   const onAdd = () => {
     const trimmed = name.trim();
     if (!trimmed) return;
     addCategory(trimmed);
-    setName('');
+    setName("");
   };
 
   const onAddSuggested = (categoryName: string) => {
@@ -21,38 +41,61 @@ const CategoriesScreen: React.FC<any> = () => {
     // Show a smart completion message
     setTimeout(() => {
       Alert.alert(
-        '🎉 Great choice!', 
+        "🎉 Great choice!",
         `You've added "${categoryName}". Now you can create habits in this category and I'll suggest smart scheduling options!`,
-        [{ text: 'Awesome!', style: 'default' }]
+        [{ text: "Awesome!", style: "default" }],
       );
     }, 100);
   };
 
   const onEdit = (id: string) => {
-    Alert.prompt('Edit category', undefined, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Save', onPress: (value?: string) => value && updateCategory(id, value) }
-    ], 'plain-text');
+    Alert.prompt(
+      "Edit category",
+      undefined,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Save",
+          onPress: (value?: string) => value && updateCategory(id, value),
+        },
+      ],
+      "plain-text",
+    );
   };
 
   const onDelete = (id: string) => {
-    Alert.alert('Delete category?', 'This will remove the category from habits.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => deleteCategory(id) }
-    ]);
+    Alert.alert(
+      "Delete category?",
+      "This will remove the category from habits.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => deleteCategory(id),
+        },
+      ],
+    );
   };
 
   return (
     <Screen>
-      <Title style={{ marginBottom: 16 }}>Categories</Title>
-      
       {/* Add Category CTA */}
       <View style={styles.ctaContainer}>
         <View style={styles.addCategoryRow}>
           <View style={{ flex: 1 }}>
-            <TextField value={name} onChangeText={setName} placeholder="New category name" />
+            <TextField
+              value={name}
+              onChangeText={setName}
+              placeholder="New category name"
+            />
           </View>
-          <Button label="Add Category" onPress={onAdd} />
+          <TouchableOpacity
+            style={[styles.addIconButton, { backgroundColor: colors.primary }]}
+            onPress={onAdd}
+          >
+            <Ionicons name="add" size={20} color={colors.background} />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -60,23 +103,33 @@ const CategoriesScreen: React.FC<any> = () => {
       {categories.length < 3 && (
         <View style={{ marginBottom: 20 }}>
           <TextBody style={{ marginBottom: 16 }}>
-            {categories.length === 0 
-              ? "🎯 Let's organize your habits! Choose categories that match your goals:" 
-              : "✨ Add more categories to better organize your habits:"
-            }
+            {categories.length === 0
+              ? "🎯 Let's organize your habits! Choose categories that match your goals:"
+              : "✨ Add more categories to better organize your habits:"}
           </TextBody>
           <View style={styles.suggestedCategoriesContainer}>
             {getSuggestedCategories()
-              .filter(categoryName => !categories.some(cat => cat.name === categoryName))
+              .filter(
+                (categoryName) =>
+                  !categories.some((cat) => cat.name === categoryName),
+              )
               .map((categoryName, index) => (
                 <TouchableOpacity
                   key={index}
-                  style={{ ...styles.suggestedCategoryButton, backgroundColor: colors.primary }}
+                  style={{
+                    ...styles.suggestedCategoryButton,
+                    backgroundColor: colors.primary,
+                  }}
                   onPress={() => onAddSuggested(categoryName)}
                 >
-                  <TextBody style={{ ...styles.suggestedCategoryText, color: colors.background }}>
-                  {getCategoryIcon(categoryName)} {categoryName}
-                </TextBody>
+                  <TextBody
+                    style={{
+                      ...styles.suggestedCategoryText,
+                      color: colors.background,
+                    }}
+                  >
+                    {getCategoryIcon(categoryName)} {categoryName}
+                  </TextBody>
                 </TouchableOpacity>
               ))}
           </View>
@@ -90,7 +143,9 @@ const CategoriesScreen: React.FC<any> = () => {
           keyExtractor={(c) => c.id}
           ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
           renderItem={({ item }) => (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+            >
               <View style={{ flex: 1 }}>
                 <TextBody>{item.name}</TextBody>
               </View>
@@ -100,7 +155,7 @@ const CategoriesScreen: React.FC<any> = () => {
           )}
         />
       ) : (
-        <TextBody style={{ textAlign: 'center', marginTop: 20, opacity: 0.7 }}>
+        <TextBody style={{ textAlign: "center", marginTop: 20, opacity: 0.7 }}>
           No categories yet. Use the suggestions above or create your own!
         </TextBody>
       )}
@@ -113,7 +168,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   addCategoryRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
   },
   suggestedCategoriesContainer: {
@@ -123,10 +178,18 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   suggestedCategoryText: {
-    fontWeight: '500',
+    fontWeight: "500",
+  },
+  addIconButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 8,
   },
 });
 
