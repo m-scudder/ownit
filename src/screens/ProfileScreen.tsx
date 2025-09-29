@@ -1,14 +1,10 @@
 import { Screen, TextBody, Title } from "@/components/Neutral";
 import React from "react";
-import { View, Text, StyleSheet, Switch, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../theme/useTheme";
 import { fonts } from "../theme/fonts";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  testNotification,
-  requestNotificationPermissions,
-} from "../utils/notifications";
 
 const ProfileScreen: React.FC<any> = () => {
   const navigation = useNavigation<any>();
@@ -23,14 +19,61 @@ const ProfileScreen: React.FC<any> = () => {
         <Title style={getStyles(colors).sectionTitle}>Settings</Title>
         <View style={getStyles(colors).row}>
           <Text style={getStyles(colors).label}>Dark Mode</Text>
-          <Switch value={isDarkMode} onValueChange={toggleTheme} />
+          <TouchableOpacity
+            style={{
+              width: 50,
+              height: 30,
+              borderRadius: 15,
+              backgroundColor: isDarkMode ? colors.primary : colors.border,
+              alignItems: isDarkMode ? "flex-end" : "flex-start",
+              justifyContent: "center",
+              paddingHorizontal: 2,
+            }}
+            onPress={toggleTheme}
+          >
+            <View
+              style={{
+                width: 26,
+                height: 26,
+                borderRadius: 13,
+                backgroundColor: colors.background,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+                elevation: 5,
+              }}
+            />
+          </TouchableOpacity>
         </View>
         <View style={getStyles(colors).row}>
           <Text style={getStyles(colors).label}>Notifications</Text>
-          <Switch
-            value={notificationsEnabled}
-            onValueChange={setNotificationsEnabled}
-          />
+          <TouchableOpacity
+            style={{
+              width: 50,
+              height: 30,
+              borderRadius: 15,
+              backgroundColor: notificationsEnabled ? colors.primary : colors.border,
+              alignItems: notificationsEnabled ? "flex-end" : "flex-start",
+              justifyContent: "center",
+              paddingHorizontal: 2,
+            }}
+            onPress={() => setNotificationsEnabled(!notificationsEnabled)}
+          >
+            <View
+              style={{
+                width: 26,
+                height: 26,
+                borderRadius: 13,
+                backgroundColor: colors.background,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+                elevation: 5,
+              }}
+            />
+          </TouchableOpacity>
         </View>
       </View>
 

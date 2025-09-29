@@ -371,9 +371,9 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
           >
             <View style={{ flex: 1 }}>
               <SectionHeader>Require Note for Completion</SectionHeader>
-              <TextBody style={{ ...fonts.styles.bodySmall, marginTop: 4 }}>
+              {/* <TextBody style={{ ...fonts.styles.bodySmall, marginTop: 4 }}>
                 When enabled, this habit cannot be marked as completed without adding a note
-              </TextBody>
+              </TextBody> */}
             </View>
             <TouchableOpacity
               style={{
