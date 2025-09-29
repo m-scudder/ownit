@@ -77,7 +77,9 @@ const getStyles = (colors: { background: string; surface: string; border: string
     screen: {
       flex: 1,
       backgroundColor: colors.background,
-      padding: 16
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      paddingTop: 0
     },
     title: {
       color: colors.text,

@@ -3,7 +3,6 @@ import { FlatList, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Screen, Title, TextBody, Button } from '../components/Neutral';
 import { useStore } from '../store/useStore';
 import { useTheme } from '../theme/useTheme';
-import { calculateCurrentStreak, isHabitDueOnDate } from '../utils/dates';
 import { useNavigation } from '@react-navigation/native';
 import type { Habit, Completion } from '../types';
 
@@ -35,8 +34,6 @@ const AllHabitsScreen: React.FC<any> = () => {
   };
 
   const renderHabitItem = ({ item: habit }: { item: Habit }) => {
-    const streak = calculateCurrentStreak(habit, completions);
-    const dueToday = isHabitDueOnDate(habit, new Date());
     const categoryName = getCategoryName(habit.categoryId);
     const scheduleText = getScheduleText(habit);
 
@@ -46,24 +43,14 @@ const AllHabitsScreen: React.FC<any> = () => {
         onPress={() => navigation.navigate('HabitDetail', { id: habit.id })}
       >
         <View style={styles.habitContent}>
-          <View style={styles.habitHeader}>
-            <TextBody style={{ ...styles.habitName, color: colors.text }}>{habit.name}</TextBody>
-            {dueToday && (
-              <View style={[styles.dueBadge, { backgroundColor: colors.primary }]}>
-                <TextBody style={{ ...styles.dueText, color: colors.background }}>Due Today</TextBody>
-              </View>
-            )}
-          </View>
+          <TextBody style={{ ...styles.habitName, color: colors.text }}>{habit.name}</TextBody>
           
           <View style={styles.habitMeta}>
             <TextBody style={{ ...styles.metaText, color: colors.subtext }}>
-              Category: {categoryName}
+              {categoryName}
             </TextBody>
             <TextBody style={{ ...styles.metaText, color: colors.subtext }}>
-              Schedule: {scheduleText}
-            </TextBody>
-            <TextBody style={{ ...styles.metaText, color: colors.subtext }}>
-              Streak: {streak} days
+              {scheduleText}
             </TextBody>
           </View>
         </View>
@@ -92,7 +79,7 @@ const AllHabitsScreen: React.FC<any> = () => {
           data={habits}
           keyExtractor={(habit) => habit.id}
           contentContainerStyle={styles.listContainer}
-          ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+          ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
           renderItem={renderHabitItem}
           showsVerticalScrollIndicator={false}
         />
@@ -103,41 +90,29 @@ const AllHabitsScreen: React.FC<any> = () => {
 
 const styles = StyleSheet.create({
   ctaContainer: {
-    marginBottom: 20,
+    marginBottom: 12,
   },
   habitItem: {
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 8,
+    padding: 12,
     borderWidth: 1,
   },
   habitContent: {
     flex: 1,
   },
-  habitHeader: {
+  habitName: {
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 6,
+  },
+  habitMeta: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
-  },
-  habitName: {
-    fontSize: 16,
-    fontWeight: '600',
-    flex: 1,
-  },
-  dueBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  dueText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  habitMeta: {
-    gap: 4,
   },
   metaText: {
-    fontSize: 14,
+    fontSize: 13,
+    color: '#666',
   },
   emptyContainer: {
     flex: 1,
