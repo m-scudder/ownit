@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -11,6 +12,7 @@ import AllHabitsScreen from './src/screens/AllHabitsScreen';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from './src/theme/useTheme';
 import { CustomHeader } from './src/components/Neutral';
+import { useStore } from './src/store/useStore';
 
 const HomeStack = createNativeStackNavigator();
 const ProfileStack = createNativeStackNavigator();
@@ -62,6 +64,13 @@ function ProfileStackNavigator() {
 
 export default function App() {
   const { mode, colors } = useTheme();
+  const { initializeNotifications } = useStore();
+  
+  // Initialize notifications when app starts
+  useEffect(() => {
+    initializeNotifications().catch(console.error);
+  }, [initializeNotifications]);
+  
   const navTheme = {
     ...DefaultTheme,
     dark: mode === 'dark',

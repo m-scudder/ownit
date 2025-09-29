@@ -8,11 +8,18 @@ export interface HabitSchedule {
   daysOfMonth?: number[]; // monthly (1-31)
 }
 
+export interface HabitReminder {
+  enabled: boolean;
+  time: string; // HH:MM format
+  daysOfWeek?: DayOfWeek[]; // If not provided, uses habit schedule
+}
+
 export interface Habit {
   id: string;
   name: string;
   categoryId?: string | null;
   schedule: HabitSchedule;
+  reminder?: HabitReminder;
   createdAt: string; // ISO
 }
 

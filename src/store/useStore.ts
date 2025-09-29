@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { Category, Completion, Habit, HabitSchedule, RootState, ThemeMode } from '../types';
+import type { Category, Completion, Habit, HabitSchedule, HabitReminder, RootState, ThemeMode } from '../types';
 import { formatDateKey } from '../utils/dates';
+import { scheduleHabitNotifications, cancelHabitNotifications, scheduleAllHabitNotifications } from '../utils/notifications';
 
 // Suggested categories for first-time users
 const SUGGESTED_CATEGORIES = [
@@ -75,8 +76,8 @@ interface Actions {
   getCategoryIcon: (categoryName: string) => string;
   getSmartScheduleSuggestion: (categoryName: string) => HabitSchedule;
 
-  addHabit: (input: { name: string; categoryId?: string | null; schedule: HabitSchedule }) => string;
-  updateHabit: (id: string, updates: Partial<Pick<Habit, 'name' | 'categoryId' | 'schedule'>>) => void;
+  addHabit: (input: { name: string; categoryId?: string | null; schedule: HabitSchedule; reminder?: HabitReminder }) => string;
+  updateHabit: (id: string, updates: Partial<Pick<Habit, 'name' | 'categoryId' | 'schedule' | 'reminder'>>) => void;
   deleteHabit: (id: string) => void;
 
   completeHabitToday: (habitId: string, note: string, date?: Date) => void;
@@ -84,6 +85,7 @@ interface Actions {
 
   setTheme: (mode: ThemeMode) => void;
   toggleTheme: () => void;
+  initializeNotifications: () => Promise<void>;
 }
 
 export const useStore = create<RootState & Actions>()(
@@ -128,20 +130,43 @@ export const useStore = create<RootState & Actions>()(
         }
       },
 
-      addHabit: ({ name, categoryId = null, schedule }) => {
+      addHabit: ({ name, categoryId = null, schedule, reminder }) => {
         const id = generateId();
-        const next: Habit = { id, name, categoryId, schedule, createdAt: new Date().toISOString() };
+        const next: Habit = { id, name, categoryId, schedule, reminder, createdAt: new Date().toISOString() };
         set((s) => ({ habits: [next, ...s.habits] }));
+        
+        // Schedule notifications for the new habit
+        if (reminder?.enabled) {
+          scheduleHabitNotifications(next).catch(console.error);
+        }
+        
         return id;
       },
       updateHabit: (id, updates) => {
-        set((s) => ({ habits: s.habits.map((h) => (h.id === id ? { ...h, ...updates } : h)) }));
+        set((s) => {
+          const updatedHabits = s.habits.map((h) => (h.id === id ? { ...h, ...updates } : h));
+          const updatedHabit = updatedHabits.find(h => h.id === id);
+          
+          // Update notifications for the habit
+          if (updatedHabit) {
+            if (updates.reminder?.enabled) {
+              scheduleHabitNotifications(updatedHabit).catch(console.error);
+            } else {
+              cancelHabitNotifications(id).catch(console.error);
+            }
+          }
+          
+          return { habits: updatedHabits };
+        });
       },
       deleteHabit: (id) => {
         set((s) => ({
           habits: s.habits.filter((h) => h.id !== id),
           completions: s.completions.filter((c) => c.habitId !== id)
         }));
+        
+        // Cancel notifications for the deleted habit
+        cancelHabitNotifications(id).catch(console.error);
       },
 
       completeHabitToday: (habitId, note, date = new Date()) => {
@@ -162,7 +187,12 @@ export const useStore = create<RootState & Actions>()(
       },
 
       setTheme: (mode) => set(() => ({ theme: mode })),
-      toggleTheme: () => set((s) => ({ theme: s.theme === 'dark' ? 'light' : 'dark' }))
+      toggleTheme: () => set((s) => ({ theme: s.theme === 'dark' ? 'light' : 'dark' })),
+      
+      initializeNotifications: async () => {
+        const { habits } = get();
+        await scheduleAllHabitNotifications(habits);
+      }
     }),
     {
       name: 'ownit-store',

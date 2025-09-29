@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { View, TouchableOpacity, ScrollView } from 'react-native';
+import { View, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { Screen, Title, TextField, Button, Chip, TextBody, SectionHeader } from '../components/Neutral';
 import { useStore } from '../store/useStore';
 import { useTheme } from '../theme/useTheme';
-import type { DayOfWeek, FrequencyType, HabitSchedule } from '../types';
+import type { DayOfWeek, FrequencyType, HabitSchedule, HabitReminder } from '../types';
 import { toDayLabel } from '../utils/dates';
+import { requestNotificationPermissions } from '../utils/notifications';
 
 const DAYS: DayOfWeek[] = [0,1,2,3,4,5,6];
 
@@ -19,6 +21,21 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
   const [frequency, setFrequency] = useState<FrequencyType>(editing?.schedule.type ?? 'daily');
   const [daysOfWeek, setDaysOfWeek] = useState<DayOfWeek[]>(editing?.schedule.daysOfWeek ?? []);
   const [daysOfMonthInput, setDaysOfMonthInput] = useState<string>((editing?.schedule.daysOfMonth ?? []).join(','));
+  
+  // Reminder states
+  const [reminderEnabled, setReminderEnabled] = useState(editing?.reminder?.enabled ?? false);
+  const [reminderTime, setReminderTime] = useState(() => {
+    if (editing?.reminder?.time) {
+      const [hours, minutes] = editing.reminder.time.split(':').map(Number);
+      const date = new Date();
+      date.setHours(hours, minutes, 0, 0);
+      return date;
+    }
+    const date = new Date();
+    date.setHours(9, 0, 0, 0);
+    return date;
+  });
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const schedule: HabitSchedule = useMemo(() => {
     if (frequency === 'monthly') {
@@ -34,13 +51,32 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
     return { type: 'daily' };
   }, [frequency, daysOfWeek, daysOfMonthInput]);
 
-  const onSave = () => {
+  const reminder: HabitReminder | undefined = useMemo(() => {
+    if (!reminderEnabled) return undefined;
+    const timeString = `${reminderTime.getHours().toString().padStart(2, '0')}:${reminderTime.getMinutes().toString().padStart(2, '0')}`;
+    return {
+      enabled: reminderEnabled,
+      time: timeString,
+    };
+  }, [reminderEnabled, reminderTime]);
+
+  const onSave = async () => {
     if (!name.trim()) return;
+    
+    // Request notification permissions if reminder is enabled
+    if (reminderEnabled) {
+      const hasPermission = await requestNotificationPermissions();
+      if (!hasPermission) {
+        // Still allow saving the habit but without notifications
+        console.log('Notification permission denied, saving habit without reminders');
+      }
+    }
+    
     if (editing) {
-      updateHabit(editing.id, { name: name.trim(), categoryId, schedule });
+      updateHabit(editing.id, { name: name.trim(), categoryId, schedule, reminder });
       navigation.goBack();
     } else {
-      const newId = addHabit({ name: name.trim(), categoryId, schedule });
+      const newId = addHabit({ name: name.trim(), categoryId, schedule, reminder });
       navigation.replace('HabitDetail', { id: newId });
     }
   };
@@ -144,6 +180,76 @@ const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
             <TextField value={daysOfMonthInput} onChangeText={setDaysOfMonthInput} placeholder="e.g. 1,15,28" />
           </View>
         )}
+
+        {/* Reminder Section */}
+        <View style={{ marginBottom: 24 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <SectionHeader>Enable Reminder</SectionHeader>
+            <TouchableOpacity
+              style={{
+                width: 50,
+                height: 30,
+                borderRadius: 15,
+                backgroundColor: reminderEnabled ? colors.primary : colors.border,
+                alignItems: reminderEnabled ? 'flex-end' : 'flex-start',
+                justifyContent: 'center',
+                paddingHorizontal: 2,
+              }}
+              onPress={() => setReminderEnabled(!reminderEnabled)}
+            >
+              <View
+                style={{
+                  width: 26,
+                  height: 26,
+                  borderRadius: 13,
+                  backgroundColor: colors.background,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+                  elevation: 5,
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {reminderEnabled && (
+            <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingVertical: 16,
+                paddingHorizontal: 16,
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+                borderWidth: 1,
+                borderRadius: 12,
+              }}
+              onPress={() => setShowTimePicker(true)}
+            >
+              <TextBody>Reminder time</TextBody>
+              <TextBody style={{ color: colors.primary, fontWeight: '600' }}>
+                {reminderTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </TextBody>
+            </TouchableOpacity>
+          )}
+
+          {showTimePicker && (
+            <DateTimePicker
+              value={reminderTime}
+              mode="time"
+              is24Hour={true}
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={(event, selectedTime) => {
+                setShowTimePicker(false);
+                if (selectedTime) {
+                  setReminderTime(selectedTime);
+                }
+              }}
+            />
+          )}
+        </View>
 
         <Button label={editing ? 'Save' : 'Create'} onPress={onSave} />
       </ScrollView>
