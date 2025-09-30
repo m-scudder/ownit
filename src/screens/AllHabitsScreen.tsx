@@ -15,9 +15,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { SwipeListView } from "react-native-swipe-list-view";
 import type { Habit, Completion, Category } from "../types";
 import { hasReminder } from "../utils/dates";
+import { ProfileStackScreenProps } from "../types/navigation";
 
-const AllHabitsScreen: React.FC<any> = () => {
-  const navigation = useNavigation<any>();
+const AllHabitsScreen: React.FC<ProfileStackScreenProps<'AllHabits'>> = () => {
+  const navigation = useNavigation<ProfileStackScreenProps<'AllHabits'>['navigation']>();
   const { habits, completions, categories, deleteHabit } = useStore();
   const { colors } = useTheme();
 
@@ -121,7 +122,7 @@ const AllHabitsScreen: React.FC<any> = () => {
           styles.habitItem,
           { backgroundColor: colors.surface, borderColor: colors.border },
         ]}
-        onPress={() => navigation.navigate("HabitForm", { id: habit.id })}
+        onPress={() => navigation.navigate("HabitForm", { habitId: habit.id })}
         activeOpacity={0.7}
       >
         <View style={styles.habitContent}>
@@ -223,7 +224,7 @@ const AllHabitsScreen: React.FC<any> = () => {
       {/* Floating Action Button */}
       <TouchableOpacity
         style={[styles.fab, { backgroundColor: colors.primary }]}
-        onPress={() => navigation.navigate("HabitForm")}
+        onPress={() => navigation.navigate("HabitForm", {})}
         activeOpacity={0.8}
       >
         <Ionicons name="add" size={24} color={colors.background} />

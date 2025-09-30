@@ -8,9 +8,10 @@ import {
 } from "../components/Neutral";
 import { useStore } from "../store/useStore";
 import { useTheme } from "../theme/useTheme";
+import { HabitDetailScreenProps } from "../types/navigation";
 
-const HabitDetailScreen: React.FC<any> = ({ route, navigation }) => {
-  const id: string = route?.params?.id;
+const HabitDetailScreen: React.FC<HabitDetailScreenProps> = ({ route, navigation }) => {
+  const id: string = route.params.id;
   const { habits, completeHabitToday } = useStore();
   const { colors } = useTheme();
   const habit = habits.find((h) => h.id === id);

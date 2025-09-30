@@ -3,7 +3,7 @@
     "target": "ES2020",
     "module": "ESNext",
     "jsx": "react-jsx",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "strict": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
@@ -16,7 +16,7 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src", "App.js"],
+  "include": ["src", "App.js", "plugins"],
   "exclude": ["node_modules", "dist"],
   "extends": "expo/tsconfig.base"
 }

@@ -1,16 +1,44 @@
 import { Screen, TextBody, Title } from "@/components/Neutral";
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../theme/useTheme";
 import { fonts } from "../theme/fonts";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../contexts/AuthContext";
+import { ProfileStackScreenProps } from "../types/navigation";
 
-const ProfileScreen: React.FC<any> = () => {
-  const navigation = useNavigation<any>();
+const ProfileScreen: React.FC<ProfileStackScreenProps<'Profile'>> = () => {
+  const navigation = useNavigation<ProfileStackScreenProps<'Profile'>['navigation']>();
   const { mode, colors, toggleTheme } = useTheme();
   const isDarkMode = mode === "dark";
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
+  const { signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    Alert.alert(
+      "Sign Out",
+      "Are you sure you want to sign out?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Sign Out",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await signOut();
+            } catch (error) {
+              console.error("Error signing out:", error);
+              Alert.alert("Error", "Failed to sign out. Please try again.");
+            }
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <Screen>
@@ -117,6 +145,28 @@ const ProfileScreen: React.FC<any> = () => {
               <View style={getStyles(colors).cardText}>
                 <Text style={getStyles(colors).cardTitle}>Habits</Text>
                 {/* <Text style={getStyles(colors).cardSubtitle}>View your habits</Text> */}
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={colors.subtext} />
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      {/* Sign Out Section */}
+      <View style={getStyles(colors).managementSection}>
+        <TouchableOpacity
+          style={[getStyles(colors).managementCard, { borderColor: colors.danger || '#ff4444' }]}
+          onPress={handleSignOut}
+        >
+          <View style={getStyles(colors).cardContent}>
+            <View style={getStyles(colors).cardLeft}>
+              <Ionicons
+                name="log-out-outline"
+                size={24}
+                color={colors.danger || '#ff4444'}
+              />
+              <View style={getStyles(colors).cardText}>
+                <Text style={[getStyles(colors).cardTitle, { color: colors.danger || '#ff4444' }]}>Sign Out</Text>
               </View>
             </View>
             <Ionicons name="chevron-forward" size={20} color={colors.subtext} />

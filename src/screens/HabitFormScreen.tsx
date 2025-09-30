@@ -21,11 +21,12 @@ import type {
 } from "../types";
 import { toDayLabel } from "../utils/dates";
 import { requestNotificationPermissions } from "../utils/notifications";
+import { ProfileStackScreenProps } from "../types/navigation";
 
 const DAYS: DayOfWeek[] = [0, 1, 2, 3, 4, 5, 6];
 
-const HabitFormScreen: React.FC<any> = ({ route, navigation }) => {
-  const id: string | undefined = route?.params?.id;
+const HabitFormScreen: React.FC<ProfileStackScreenProps<'HabitForm'>> = ({ route, navigation }) => {
+  const id: string | undefined = route.params.habitId;
   const {
     habits,
     categories,

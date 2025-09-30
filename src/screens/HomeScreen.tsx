@@ -21,8 +21,9 @@ import { useTheme } from "../theme/useTheme";
 import { fonts } from "../theme/fonts";
 import { format } from "date-fns";
 import type { Habit, Completion, Category } from "../types";
+import { HomeStackScreenProps } from "../types/navigation";
 
-const HomeScreen: React.FC<any> = ({ navigation }) => {
+const HomeScreen: React.FC<HomeStackScreenProps<'Home'>> = ({ navigation }) => {
   const {
     habits,
     completions,

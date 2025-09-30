@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "8785305095",
+    "project_id": "ownit-prod",
+    "storage_bucket": "ownit-prod.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:8785305095:android:585a8d1984f6170ba814a2",
+        "android_client_info": {
+          "package_name": "ownit.now"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdAwCwPUX0FC_eIZeAqL1l6FzJjtobn5M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

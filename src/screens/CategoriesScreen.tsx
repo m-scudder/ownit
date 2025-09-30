@@ -17,8 +17,9 @@ import {
 import { useStore } from "../store/useStore";
 import { useTheme } from "../theme/useTheme";
 import { fonts } from "../theme/fonts";
+import { ProfileStackScreenProps } from "../types/navigation";
 
-const CategoriesScreen: React.FC<any> = () => {
+const CategoriesScreen: React.FC<ProfileStackScreenProps<'Categories'>> = () => {
   const {
     categories,
     addCategory,
